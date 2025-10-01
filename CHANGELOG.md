@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 2025-10-01
+### Changed
+- update IQFeed Client version to 6.2.1.29 
+- re-enable x11vnc for debugging purposes
+- reorganize to use process-compose to orchestrate the processes
+- remove unused files
 
 ## 2025-05-11
 ### Changed

@@ -1,80 +1,58 @@
 Dockerized IQFeed client with X11VNC for remote viewing
 =======================
 
-[![CircleCI](https://circleci.com/gh/jaikumarm/docker-iqfeed.svg?style=svg)](https://circleci.com/gh/jaikumarm/docker-iqfeed)
-
 See [CHANGELOG](./CHANGELOG.md) for a list of notable changes
 
 Usage
 -----
 Clone this repository and build the image:
 ```
-git clone https://github.com/jaikumarm/iqfeed-docker.git
-cd iqfeed-docker
-docker build . -t iqfeed-docker
+git clone https://github.com/cruciblecommodities/docker-iqfeed.git
+cd docker-iqfeed
+docker build . -t iqfeed
 ```
 
 Run your image with `docker run`
 ```
-docker run -e IQFEED_PRODUCT_ID=CHANGEME \
+docker run --name iqfeed -e IQFEED_PRODUCT_ID=CHANGEME \
     -e IQFEED_LOGIN=CHANGEME \
     -e IQFEED_PASSWORD=CHANGEME \
-    -p 5009 -p 9100 -p 9200 -p 9300 -p 9400 \
-    -p 5901:5901 -p 8088:8080 \
+    -p 5009:5009 -p 9100:9100 -p 9200:9200 -p 9300:9300 -p 9400:9400 \
+    -p 5901:5900 \
     -v /var/log/iqfeed:/root/DTN/IQFeed \
-    -d iqfeed-docker
+    -d iqfeed
 ```
-
-OR you can directly run my image from dockerhub with  `docker run`
-```
-docker run -e IQFEED_PRODUCT_ID=CHANGEME \
-    -e IQFEED_LOGIN=CHANGEME \
-    -e IQFEED_PASSWORD=CHANGEME \
-    -p 5009 -p 9100 -p 9200 -p 9300 -p 9400 \
-    -p 5901:5901 -p 8088:8080 \
-    -v /var/log/iqfeed:/root/DTN/IQFeed \
-    -d jaikumarm/iqfeed:v62025-w8
-```
-
-With `docker-compose` edit the docker-compose.yml with your iqfeed credentials, then run
-```
-docker-compose -f docker-compose.yml up -d iqfeed
-```
-
 
 In docker logs of the container and you should see
 ```
 ...
-2020-03-03 05:52:11,281 INFO supervisord started with pid 1
+Checking process-compose state at Wed Oct  1 10:40:35 UTC 2025
+Project:           398c37414074/root
+User:              root
+Version:           v1.75.2
+Up Time:           30s
+Processes:         5
+Running Processes: 5
+File Names:
+         - process-compose.yaml
+Status OK. Waiting 10 seconds...
 ...
-2020-03-03 05:52:12,521 INFO pyiqfeed_admin_conn.<module>.64:  PyIQFeed admin conn started.
-2020-03-03 05:52:12,524 INFO pyiqfeed_admin_conn.<module>.144:  iqfeed service not running.
-2020-03-03 05:52:13,822 INFO success: iqfeed-proxy entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
-2020-03-03 05:52:13,822 INFO success: Xvfb entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
-2020-03-03 05:52:13,822 INFO success: wine-iqfeed-startup entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
-2020-03-03 05:52:13,822 INFO success: pyiqfeed-admin-conn entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
-..
-2020-03-03 05:52:30,221 INFO pyiqfeed_admin_conn.<module>.136:  iqfeed service running.
-...
 ```
 
-If you see `iqfeed service running.` it means it all good. 
+You can check on the various processes using:
 
-You can also see a very chatty version of whats going on with iqfeed client if you tail `tail -f /var/log/iqfeed/pyiqfeed-admin-conn.log`. 
-
-
-SideNote:
-As of right now for some reason not known to me the iqfeed client will crash every few days or hours :( I have worked around it by building the docker container health check script that monitors for wine crashes in the wine.log file and will mark the conatainer as `unhealthy`. Once this is done the container can be restarted by an external service, most popular ways are either docker stacks or docker-autoheal. I use autoheal becasue its simpler and good enough for my usecase. See `docker-compose.yml` file for details.
-
-```
-docker-compose -f docker-compose.yml up -d autoheal
+``` sh
+$ docker exec -it iqfeed process-compose attach
 ```
 
+The admin_connection should have lots of logs relating to connection status and similar.
+
+You can connect to the VNC server on port 5901 if you used the settings above (no password).
 
 This is fairly a opinionated configuration based on my own needs, if you dont like it fork it!
 
 Also some of the code is borrowed and/or inspired from in no particular order
+* https://github.com/jaikumarm/docker-iqfeed
 * https://github.com/bratchenko/docker-iqfeed
 * https://github.com/webanck/docker-wine-steam
 * https://github.com/denniskupec/iqfeed-docker
-

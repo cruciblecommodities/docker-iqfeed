@@ -2,34 +2,11 @@
 # coding=utf-8
 
 """
-This is an example that launches IQConnect.exe.
-
-You need a file called localconfig.py (described in README.md that can be
-imported here.
-
-This code just launches IQConnect.exe and returns.
-
-You probably want this to launch from cron and exit when you stop
-trading, either at an end of day or at an end of week.
-
-You probably also want to  open a socket to IQConnect.exe and maybe read
-from the Admin Socket and log some data or put it on a dashboard.  You
-can find out for example if your trading code is not reading ticks fast
-enough or if the socket get closed.
-
-Note that IQConnect.exe exits once the last connection to it is closed
-so you want to keep at least one socket to it open unless you want
-IQConnect.exe to exit.
-
-Read the comments and code in service.py for more details.
-
-This program launches an instance of IQFeed.exe if it isn't running, creates
-an AdminConn and writes messages received by the AdminConn to stdout. It looks
-for a file with the name passed as the option ctrl_file, defaults to
+This creates an AdminConn and writes messages received by the AdminConn to stdout.
+It looks for a file with the name passed as the option ctrl_file, defaults to
 /tmp/stop_iqfeed.ctrl. When it sees that file it drops it's connection to
 IQFeed.exe, deletes the control file and exits. If there are no other open
 connections to IQFeed.exe, IQFeed.exe will by default exit 5 seconds later.
-
 """
 
 import os
@@ -44,25 +21,10 @@ from typing import Sequence
 import argparse
 import pyiqfeed as iq
 
-log_filename = "/root/DTN/IQFeed/pyiqfeed-admin-conn.log"
-
-logging.basicConfig(filename=log_filename,
-                    filemode='w',
-                    level=logging.DEBUG,
-                    format='%(asctime)s %(message)s')
-# define a Handler which writes INFO messages or higher to the sys.stderr
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-# set a format which is simpler for console use
-formatter = logging.Formatter(
-    '%(asctime)s %(levelname)-4s %(module)s.%(funcName)s.%(lineno)d:  %(message)s')
-# tell the handler to use this format
-console.setFormatter(formatter)
-# add the handler to the root logger
-logging.getLogger('').addHandler(console)
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)-4s %(module)s.%(funcName)s.%(lineno)d:  %(message)s')
 
 logging.info('PyIQFeed admin conn started.')
-
 
 class CustomVerboseIQFeedListener(iq.VerboseIQFeedListener):
     """
@@ -125,9 +87,6 @@ class CustomVerboseIQFeedAdminListener(CustomVerboseIQFeedListener):
 
 
 if __name__ == "__main__":
-
-    # Modify code below to connect to the socket etc as described above
-
     while True:
         if iq.service._is_iqfeed_running():            
             admin_conn = iq.AdminConn(name="Launcher")
@@ -138,8 +97,8 @@ if __name__ == "__main__":
                 if not iq.service._is_iqfeed_running():
                     logging.info("iqfeed service stopped, exiting..")
                     break
-                admin_conn.client_stats_off()
-                time.sleep(300)
+                #admin_conn.client_stats_off()
+                time.sleep(180)
         else:
             logging.info("iqfeed service not running.")
-            time.sleep(15)
+            time.sleep(10)

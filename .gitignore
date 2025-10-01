@@ -77,3 +77,4 @@ secrets.js
 .secrets.py
 .passwords.py
 .secrets.js
+/launch.sh

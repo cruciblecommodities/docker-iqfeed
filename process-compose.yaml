@@ -1,0 +1,44 @@
+version: "0.5"
+
+processes:
+  xvfb:
+    command: "/usr/bin/Xvfb :0 -screen 0 1024x768x24"
+    availability:
+      restart: always
+      backoff_seconds: 2
+
+  x11vnc:
+    command: "/usr/bin/x11vnc -display :0 -rfbport 5900"
+    availability:
+      restart: always
+      backoff_seconds: 2
+    depends_on:
+      xvfb:
+        condition: process_started
+
+  iqfeed:
+    command: "/root/run_iqfeed.sh"
+    availability:
+      restart: always
+      backoff_seconds: 2
+    depends_on:
+      xvfb:
+        condition: process_started
+
+  admin_connection:
+    command: "python3 /root/pyiqfeed_admin_conn.py"
+    availability:
+      restart: always
+      backoff_seconds: 2
+    depends_on:
+      iqfeed:
+        condition: process_started
+
+  port_forwards:
+    command: "/root/port_forward.sh"
+    availability:
+      restart: always
+      backoff_seconds: 2
+    depends_on:
+      iqfeed:
+        condition: process_started
