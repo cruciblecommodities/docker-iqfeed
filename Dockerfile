@@ -11,7 +11,7 @@ ENV LANGUAGE=en_US.UTF-8
 ENV WINEPREFIX=/root/.wine
 ENV DISPLAY=:0
 
-ENV IQFEED_INSTALLER_BIN="iqfeed_client_6_2_1_29.exe"
+ENV IQFEED_INSTALLER_BIN="iqfeed_client_6_2_3_5.exe"
 ENV IQFEED_LOG_LEVEL=0xB222
 
 ENV WINEDEBUG=-all
@@ -60,7 +60,7 @@ RUN winecfg && wineserver --wait
 # Install iqfeed client
 RUN mkdir -p /root/DTN/IQFeed && \
     wget -nv http://www.iqfeed.net/$IQFEED_INSTALLER_BIN -O /root/$IQFEED_INSTALLER_BIN && \
-    xvfb-run -s -noreset -a wine64 /root/$IQFEED_INSTALLER_BIN /S && \
+    xvfb-run -s -noreset -a wine /root/$IQFEED_INSTALLER_BIN /S && \
     wineserver --wait && \
     rm -rf /root/.wine/.cache && \
     rm -f /root/$IQFEED_INSTALLER_BIN
