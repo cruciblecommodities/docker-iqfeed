@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## 2026-11-25
+### Fixed
+- remove a stale X lock (/tmp/.X0-lock, /tmp/.X11-unix/X0) at each container start, so Xvfb and IQConnect start again after a container restart
+
+### Added
+- entrypoint exits with status 1 when IQConnect does not accept connections on 127.0.0.1:9100 for 300 s after a 120 s start grace, so the Docker restart policy restarts the container
+- Docker HEALTHCHECK (healthcheck.sh): healthy only when port 9100 accepts connections and the admin port reports the DTN connection as Connected
+
+### Changed
+- update IQFeed Client version to 6.2.5.1 (image: europe-docker.pkg.dev/cosmic-477912/cosmic-production/iqfeed:6.2.5.1-1)
+
 ## 2025-10-01
 ### Changed
 - update IQFeed Client version to 6.2.1.29 

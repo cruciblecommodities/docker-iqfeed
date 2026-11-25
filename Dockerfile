@@ -11,7 +11,7 @@ ENV LANGUAGE=en_US.UTF-8
 ENV WINEPREFIX=/root/.wine
 ENV DISPLAY=:0
 
-ENV IQFEED_INSTALLER_BIN="iqfeed_client_6_2_3_5.exe"
+ENV IQFEED_INSTALLER_BIN="iqfeed_client_6_2_5_1.exe"
 ENV IQFEED_LOG_LEVEL=0xB222
 
 ENV WINEDEBUG=-all
@@ -79,5 +79,9 @@ ADD run_iqfeed.sh /root/run_iqfeed.sh
 ADD port_forward.sh /root/port_forward.sh
 ADD process-compose.yaml /root/process-compose.yaml
 ADD entrypoint.sh /usr/local/bin/entrypoint.sh
+ADD healthcheck.sh /usr/local/bin/healthcheck.sh
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+    CMD ["/usr/local/bin/healthcheck.sh"]
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh" ]
